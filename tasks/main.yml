@@ -10,12 +10,24 @@
     name: "{{ kibana_package }}"
     state: "{{ kibana_package_state }}"
 
-- name: Ensure Kibana is started and enabled at boot.
+- name: Test if system is using systemd
+  shell: pidof systemd
+  register: systemd_result
+
+- name: Ensure Kibana is started and enabled at boot with systemd.
   systemd:
     name: kibana
     state: "{{ kibana_service_state }}"
     enabled: "{{ kibana_service_enabled }}"
     daemon_reload: true
+  when: systemd_result.rc == 0
+
+- name: Ensure Kibana is started and enabled at boot with service.
+  service:
+    name: kibana
+    state: "{{ kibana_service_state }}"
+    enabled: "{{ kibana_service_enabled }}"
+  when: systemd_result.rc != 0
 
 - name: Copy Kibana configuration.
   template:
