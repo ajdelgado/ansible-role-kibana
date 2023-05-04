@@ -11,10 +11,11 @@
     state: "{{ kibana_package_state }}"
 
 - name: Ensure Kibana is started and enabled at boot.
-  service:
+  systemd:
     name: kibana
     state: "{{ kibana_service_state }}"
     enabled: "{{ kibana_service_enabled }}"
+    daemon_reload: true
 
 - name: Copy Kibana configuration.
   template:
